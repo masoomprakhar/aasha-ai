@@ -1,8 +1,8 @@
 import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { BYPASS_TOKEN } from './auth';
+import { getApiBaseUrl } from './config';
 
-// API Base URL - configurable via environment variable
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8010/api/v1';
+const API_BASE_URL = getApiBaseUrl();
 
 // Token storage keys
 const ACCESS_TOKEN_KEY = 'asha_access_token';

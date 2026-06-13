@@ -35,6 +35,9 @@ class Settings(BaseSettings):
     # Local Whisper STT Settings (fallback when OpenAI is not configured)
     WHISPER_MODEL: str = "base"  # Options: tiny, base, small, medium, large
     
+    # Vercel Services — must match vercel.json backend routePrefix
+    BACKEND_ROUTE_PREFIX: str = ""
+
     # App Settings
     DEBUG: bool = True
     SQL_ECHO: bool = False  # Set to True to see SQL queries

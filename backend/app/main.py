@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
+from starlette.types import ASGIApp, Receive, Scope, Send
 
 from app.core.config import get_settings
 from app.core.database import engine
@@ -19,6 +20,22 @@ from app.apps.visits.router import router as visits_router
 from app.apps.voice.router import router as voice_router
 
 settings = get_settings()
+
+
+class StripRoutePrefixMiddleware:
+    """Strip Vercel Services routePrefix so existing /api/v1 routes match."""
+
+    def __init__(self, app: ASGIApp, prefix: str):
+        self.app = app
+        self.prefix = prefix.rstrip("/")
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] == "http" and self.prefix:
+            path = scope["path"]
+            if path == self.prefix or path.startswith(f"{self.prefix}/"):
+                scope = dict(scope)
+                scope["path"] = path[len(self.prefix):] or "/"
+        await self.app(scope, receive, send)
 
 
 @asynccontextmanager
@@ -109,3 +126,8 @@ async def api_info():
             "voice": "/api/v1/voice"
         }
     }
+
+
+# Vercel Services passes requests with routePrefix intact — strip it for routing
+if settings.BACKEND_ROUTE_PREFIX:
+    app = StripRoutePrefixMiddleware(app, settings.BACKEND_ROUTE_PREFIX)

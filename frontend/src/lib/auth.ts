@@ -1,5 +1,6 @@
 import axios from 'axios';
 import apiClient, { tokenManager } from './api';
+import { getApiBaseUrl } from './config';
 import { getSupabase, isSupabaseConfigured } from './supabase';
 import { User } from '../types';
 import { DEMO_USER_BY_ROLE } from '../store/mockData';
@@ -36,7 +37,7 @@ interface BackendUser {
     avatar_url?: string | null;
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8010/api/v1';
+const API_BASE_URL = getApiBaseUrl();
 const BYPASS_USER_KEY = 'asha_bypass_user';
 export const BYPASS_TOKEN = 'dev_bypass_token';
 
