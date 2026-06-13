@@ -1,5 +1,6 @@
 export { Navbar } from './Navbar';
 export { Hero } from './Hero';
+export { RoleBentoStrip } from './RoleBentoStrip';
 export { PhoneVoiceAgent } from './PhoneVoiceAgent';
 export { VoiceAgentLogo } from './VoiceAgentLogo';
 export { VoiceAgentStrip } from './VoiceAgentStrip';
