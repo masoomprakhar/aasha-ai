@@ -646,7 +646,7 @@ Built with care by:
 |------|--------|
 | Prakhar Singh | [@masoomprakhar](https://github.com/masoomprakhar) |
 | Prateek Srivastava | [@prateek-workspace](https://github.com/prateek-workspace) |
-| Lakshya Barnwal | [@lakshya-baranwal](https://github.com/lakshya-baranwal) |
+| Naman Rajput | [@NamanRajput](https://github.com/NamanRajput-git) |
 | Prakhar Dixit| [@Prakhar54dixit](https://github.com/Prakhar54dixit) |
 
 ### Contributing
