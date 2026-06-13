@@ -1,0 +1,21 @@
+.claude/
+.vscode/
+.DS_Store
+*.log
+
+# Secrets — never commit
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+
+# Node
+node_modules/
+
+# Build output
+frontend/dist/

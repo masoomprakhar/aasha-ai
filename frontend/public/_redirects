@@ -1,0 +1,7 @@
+# Static landing at site root; React SPA for app routes (Netlify / compatible hosts)
+/ /landing/index.html 200
+/role-select /index.html 200
+/login /index.html 200
+/beneficiary/* /index.html 200
+/asha/* /index.html 200
+/partner/* /index.html 200
