@@ -51,15 +51,21 @@ function AppRoutes() {
   useEffect(() => {
     let active = true;
 
-    void authService.initialize().then((user) => {
-      if (!active) return;
-      if (user) {
-        login(user);
-      } else {
+    void authService.initialize()
+      .then((user) => {
+        if (!active) return;
+        if (user) {
+          login(user);
+        } else {
+          resetSession();
+        }
+        setAuthReady(true);
+      })
+      .catch(() => {
+        if (!active) return;
         resetSession();
-      }
-      setAuthReady(true);
-    });
+        setAuthReady(true);
+      });
 
     return () => {
       active = false;

@@ -43,8 +43,9 @@ export const BYPASS_TOKEN = 'dev_bypass_token';
 
 const isBypassSession = () => tokenManager.getAccessToken() === BYPASS_TOKEN;
 
+/** Demo mode: always bypass auth in production until backend auth is configured on Vercel. */
 export const isAuthBypassEnabled = (): boolean =>
-  import.meta.env.VITE_AUTH_BYPASS === 'true';
+  import.meta.env.VITE_AUTH_BYPASS === 'true' || import.meta.env.PROD;
 
 const mapBackendUser = (user: BackendUser): User => ({
     id: String(user.id),
@@ -146,27 +147,32 @@ const shouldFallbackToBackendAuth = (message: string): boolean => {
 
 export const authService = {
     initialize: async (): Promise<User | null> => {
-        if (isAuthBypassEnabled()) {
-            if (isBypassSession()) {
-                const stored = localStorage.getItem(BYPASS_USER_KEY);
-                if (stored) {
-                    try {
-                        return JSON.parse(stored) as User;
-                    } catch {
-                        tokenManager.clearTokens();
+        try {
+            if (isAuthBypassEnabled()) {
+                if (isBypassSession()) {
+                    const stored = localStorage.getItem(BYPASS_USER_KEY);
+                    if (stored) {
+                        try {
+                            return JSON.parse(stored) as User;
+                        } catch {
+                            tokenManager.clearTokens();
+                        }
                     }
                 }
+                return null;
             }
-            return null;
-        }
 
-        if (tokenManager.getAccessToken() === BYPASS_TOKEN) {
-            tokenManager.clearTokens();
-            localStorage.removeItem(BYPASS_USER_KEY);
-        }
+            if (!isSupabaseConfigured()) {
+                return null;
+            }
 
-        const supabase = getSupabase();
-        const { data: { session } } = await supabase.auth.getSession();
+            if (tokenManager.getAccessToken() === BYPASS_TOKEN) {
+                tokenManager.clearTokens();
+                localStorage.removeItem(BYPASS_USER_KEY);
+            }
+
+            const supabase = getSupabase();
+            const { data: { session } } = await supabase.auth.getSession();
 
         if (!authStateListener) {
             const { data } = supabase.auth.onAuthStateChange(async (event, session) => {
@@ -196,12 +202,17 @@ export const authService = {
             return null;
         }
 
-        try {
-            const { user } = await exchangeSupabaseSession(session.access_token);
-            return user;
+            try {
+                const { user } = await exchangeSupabaseSession(session.access_token);
+                return user;
+            } catch {
+                tokenManager.clearTokens();
+                await supabase.auth.signOut();
+                return null;
+            }
         } catch {
             tokenManager.clearTokens();
-            await supabase.auth.signOut();
+            localStorage.removeItem(BYPASS_USER_KEY);
             return null;
         }
     },
