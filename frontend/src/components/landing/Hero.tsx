@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Mic } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Reveal } from './Reveal';
+import { RoleBentoStrip } from './RoleBentoStrip';
 import { FeaturesAnimation } from './FeaturesAnimation';
 import { AshaNetworkBanner } from './AshaNetworkBanner';
 
@@ -65,6 +66,8 @@ export function Hero() {
           </motion.div>
         </Reveal>
       </div>
+
+      <RoleBentoStrip />
 
       <FeaturesAnimation />
       <AshaNetworkBanner />

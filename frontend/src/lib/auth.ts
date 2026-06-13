@@ -43,9 +43,8 @@ export const BYPASS_TOKEN = 'dev_bypass_token';
 
 const isBypassSession = () => tokenManager.getAccessToken() === BYPASS_TOKEN;
 
-/** Demo mode: always bypass auth in production until backend auth is configured on Vercel. */
-export const isAuthBypassEnabled = (): boolean =>
-  import.meta.env.VITE_AUTH_BYPASS === 'true' || import.meta.env.PROD;
+/** Demo mode: bypass all auth — any credentials are accepted for now. */
+export const isAuthBypassEnabled = (): boolean => true;
 
 const mapBackendUser = (user: BackendUser): User => ({
     id: String(user.id),
@@ -57,14 +56,19 @@ const mapBackendUser = (user: BackendUser): User => ({
 let authStateListener: { subscription: { unsubscribe: () => void } } | null = null;
 
 const bypassLogin = (
-    _credentials: LoginCredentials,
+    credentials: LoginCredentials,
     options?: LoginOptions,
 ): { user: User; tokens: AuthTokens } => {
     const role = options?.role ?? 'beneficiary';
     const demoUser = DEMO_USER_BY_ROLE[role];
+    const emailName = credentials.email?.trim().split('@')[0];
+    const displayName =
+        options?.name?.trim() ||
+        (emailName && emailName.length > 0 ? emailName : '') ||
+        demoUser.name;
     const user: User = {
         ...demoUser,
-        name: options?.name?.trim() || demoUser.name,
+        name: displayName,
     };
     const tokens: AuthTokens = {
         access_token: BYPASS_TOKEN,

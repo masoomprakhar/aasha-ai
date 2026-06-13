@@ -4,7 +4,7 @@ import { ArrowLeft, Loader2, Mail, Lock, User, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useStore } from '../../store/useStore';
 import { useToast } from '../../store/useToast';
-import { authService } from '../../services';
+import { authService, isAuthBypassEnabled } from '../../services';
 import { User as UserType } from '../../types';
 import { useTranslation } from '../../hooks/useTranslation';
 
@@ -41,7 +41,7 @@ export default function Login() {
       if (isLoginMode) {
         const { user } = await authService.login(
           { email: formData.email, password: formData.password },
-          { role },
+          { role, name: formData.name || undefined },
         );
 
         login(user as UserType);
@@ -96,6 +96,7 @@ export default function Login() {
 
   const currentRole = roleLabels[role];
   const inputClass = `w-full pl-12 pr-4 py-3.5 rounded-2xl bg-canvas border border-black/5 focus:bg-white focus:ring-4 focus:outline-none font-medium text-gray-900 transition-all placeholder:text-gray-400 ${currentRole.ring}`;
+  const bypass = isAuthBypassEnabled();
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-canvas flex items-center justify-center p-6 font-sans">
@@ -118,6 +119,11 @@ export default function Login() {
             {isLoginMode ? t('auth.welcome_back') : t('auth.create_account')}
           </span>
           <h1 className="saas-headline text-ink">{currentRole.title}</h1>
+          {bypass && (
+            <p className="text-caption text-muted mt-2">
+              Demo mode — enter anything to continue.
+            </p>
+          )}
         </div>
 
         <form onSubmit={handleAuth} className="space-y-3.5">
@@ -127,7 +133,6 @@ export default function Login() {
               <User className="absolute left-4 top-3.5 text-gray-400 w-5 h-5" />
               <input
                 type="text"
-                required
                 placeholder={t('auth.fullname')}
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -139,9 +144,8 @@ export default function Login() {
           <div className="relative">
             <Mail className="absolute left-4 top-3.5 text-gray-400 w-5 h-5" />
             <input
-              type="email"
-              required
-              placeholder={t('auth.email')}
+              type="text"
+              placeholder={bypass ? 'Email or username (anything works)' : t('auth.email')}
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               className={inputClass}
@@ -152,8 +156,7 @@ export default function Login() {
             <Lock className="absolute left-4 top-3.5 text-gray-400 w-5 h-5" />
             <input
               type="password"
-              required
-              placeholder={t('auth.password')}
+              placeholder={bypass ? 'Password (optional)' : t('auth.password')}
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               className={inputClass}
