@@ -8,6 +8,7 @@
 
 > **ASHA AI** (Adaptive Support for Health & Awareness) is a voice-first, AI-powered maternal and reproductive health platform built for rural Indian women, ASHA workers, and NGO partners. It works on low-end devices, supports 11+ Indian languages, and is designed for intermittent connectivity.
 
+# View Live Demo: https://aasha-ai-37xu.vercel.app/
 ---
 
 ## Table of Contents
